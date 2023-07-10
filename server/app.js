@@ -1,6 +1,7 @@
 const express = require('express');
 const { Client } = require('pg');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
@@ -13,12 +14,12 @@ app.use(cors());
 // const bucket = 'test'
 
 const client = new Client({
-  user: 'postgres',
-  host: '172.104.93.218',
-  database: 'postgres',
-  password: 'mysecretpassword',
-  port: 5432,
-})
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_DATABASE,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+});
  
 client.connect();
 
