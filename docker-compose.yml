@@ -1,0 +1,53 @@
+version: '3'
+services:
+  client:
+    build: 
+      context: ./client  # 路徑到你的React應用程式
+      dockerfile: Dockerfile
+    volumes:
+      - './client:/usr/src/app'
+      - '/usr/src/app/node_modules'
+    ports:
+      - '3000:3000'  # 將容器的3000端口映射到主機的3000端口
+    restart: always
+
+  server:
+    build: 
+      context: ./server  # 路徑到你的Express應用程式
+      dockerfile: Dockerfile
+    volumes:
+      - './server:/usr/src/app'
+      - '/usr/src/app/node_modules'
+    ports:
+      - '5000:5000'  # 將容器的5000端口映射到主機的5000端口
+    restart: always
+    depends_on:
+      - db
+      - cache
+
+  postgres:
+    build: 
+      context: ./db  # Path to your PostgreSQL Dockerfile
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: database_name
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  influxdb:
+    image: influxdb:latest
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+  redis:
+    image: redis:latest
+    volumes:
+      - redis_data:/data
+volumes:
+  postgres_data:
+  influxdb_data:
+  redis_data:
+
