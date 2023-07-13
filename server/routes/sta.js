@@ -13,14 +13,13 @@ const client = new Client({
     port: process.env.DB_PORT,
   });
    
-
+  client.connect() // 连接在此处完成
+  .catch(err => console.error('Error establishing connection to PostgreSQL:', err));
   
   router.get('/data', async (req, res) => {
     try {
-      await client.connect();
       const query = 'SELECT ST_X(geom) AS longitude, ST_Y(geom) AS latitude FROM random_points;';
       const result = await client.query(query);
-      await client.end();
   
       res.status(200).send(result.rows);
     } catch (err) {
