@@ -6,14 +6,14 @@ import 'leaflet/dist/leaflet.css';
 const MyMap = () => {
   const [data, setData] = useState([]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const result = await axios('http://localhost:5000/data');
-  //     setData(result.data);
-  //   };
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios('/api/data');
+      setData(result.data);
+    };
  
-  //   fetchData();
-  // }, []);
+    fetchData();
+  }, []);
 
   return (
     <MapContainer center={[23, 120]} zoom={13} style={{ height: "100vh", width: "100%" }}>
