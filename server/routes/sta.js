@@ -16,7 +16,7 @@ const client = new Client({
 
 
 
-  const token = "-NGXDA6lLXh2OgGZtRInUGRY_gQljLfBBoxgPwjmpbnSvoWgf4FFBWLfQmjvzDWG-Ratb-Da1kIXadungyRgeA==";
+  const token = "gWHLgmSqna5KdxCOFAj_GBNtSaRGz9R3QjqOsvvk2x1HRYSG7RLrD_EXamZSPaW_VzOtXmdokaX159Y8Yv6spA==";
   const org = "insartw";
   const bucket = "test5";
   const influxdb = new InfluxDB({url: 'http://influxdb:8086', token: token});
@@ -38,6 +38,7 @@ const client = new Client({
 
   router.get('/data/:id', async (req, res) => {
     const { id } = req.params;
+    console.log(id)
   
     const queryApi = influxdb.getQueryApi(org);
   
