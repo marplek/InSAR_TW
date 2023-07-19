@@ -1,41 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, CircleMarker, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import axios from 'axios';
-import 'leaflet/dist/leaflet.css';
+import React, { useState, useEffect } from 'react';
+import "leaflet/dist/leaflet.css";
 
 const MyMap = () => {
   const [data, setData] = useState([]);
-  const [faultData, setFaultData] = useState(null);
+  const [popupData, setPopupData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await axios('/api/data');
+      const result = await axios('/api/sta');
       setData(result.data);
-
-      const url = "https://www.geologycloud.tw/api/v1/zh-tw/Fault25?t=.json&all=true";
-      const faultResult = await axios.get(url);
-      setFaultData(faultResult.data);
+      console.log('data:', result.data); // 在此處輸出popupData
     };
- 
+
     fetchData();
   }, []);
 
-  const onEachFeature = (feature, layer) => {
-    const pro = feature.properties;
-    let HTML = '';
-    for (let q in pro) {
-      HTML += q + ":" + pro[q] + '<br />';
-    }
-    layer.bindPopup(HTML);
+  const handleClick = async (id) => {
+    const result = await axios(`/api/data/${id}`);
+    setPopupData(result.data);
+    console.log('Popup data:', result.data); // 在此處輸出popupData
   }
-
-  const geoJsonStyles = {
-    weight: 1,
-    opacity: 1,
-    color: '#035BB2',
-    fillColor: '#035BB2',
-    fillOpacity: 0.5
-  };
 
   return (
     <MapContainer center={[23, 120]} zoom={13} style={{ height: "100vh", width: "100%" }}>
@@ -43,20 +29,33 @@ const MyMap = () => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       />
-      {data.map((item, index) => (
-        <CircleMarker key={index} center={[item.latitude, item.longitude]} pathOptions={{ color: 'red' }} radius={20}>
+      {data.map((item) => (
+        <CircleMarker
+          key={item.id}
+          center={[item.latitude, item.longitude]}
+          pathOptions={{ color: 'red' }}
+          radius={20}
+          eventHandlers={{
+            click: () => handleClick(item.id),  
+          }}
+        >
+          {popupData && (
+            <Popup>
+              <div>
+                {popupData.map((dataPoint) => (
+                  <div key={dataPoint.id}>
+                    Time: {dataPoint._time} - Value: {dataPoint._value}
+                  </div>
+                ))}
+              </div>
+            </Popup>
+          )}
         </CircleMarker>
       ))}
-      {faultData && (
-        <GeoJSON 
-          data={faultData} 
-          style={geoJsonStyles}
-          onEachFeature={onEachFeature}
-        />
-      )}
     </MapContainer>
   );
 };
 
-
 export default MyMap;
+
+
