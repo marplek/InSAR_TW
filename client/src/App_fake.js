@@ -10,20 +10,31 @@ import axios from 'axios';
 const Basic = () => {
   const position = [25.03418, 121.564517]
   const mapRef = useRef(null);
-  const [data, setData] = useState([]);
+  //const [data, setData] = useState([]);
+  const [data, setData] = useState([
+    { id: 1, latitude: 25.03418, longitude: 121.564517 },
+    { id: 2, latitude: 25.03485, longitude: 121.565060 },
+    { id: 3, latitude: 25.03412, longitude: 121.563982 },
+  ]);
+  //const [chartData, setChartData] = useState(null); 
+  const fakeChartData = [
+    { _time: '2023-01-01', _value: 100 },
+    { _time: '2023-02-01', _value: 120 },
+    { _time: '2023-03-01', _value: 180 },
+    { _time: '2023-04-01', _value: 160 },
+    { _time: '2023-05-01', _value: 200 },
+  ];
+  const [chartData, setChartData] = useState(null); // 新的state用于保存图表的数据
+  const [showChart, setShowChart] = useState(true); // 新的state用于控制图表的显示和隐藏
 
 
-  const [chartData, setChartData] = useState(null);
-
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios('/api/sta');
-      setData(result.data);
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const result = await axios('/api/sta');
+  //     setData(result.data);
+  //   };
+  //   fetchData();
+  // }, []);
 
 
   useEffect(() => {
@@ -34,14 +45,13 @@ const Basic = () => {
     const OSMUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     L.tileLayer(OSMUrl).addTo(mymap);
     L.control.zoom({position: 'bottomright'}).addTo(mymap);
-    data.forEach(item => {
-      const marker = L.circleMarker([item.latitude, item.longitude], {color: 'red', radius: 20}).addTo(mymap);
-      marker.on('click', async () => {
-        const result = await axios(`/api/data/${item.id}`);
-        setChartData(result.data);
-        document.querySelector('.sidepanel-tab-content').innerHTML = '<h4>Chart Data</h4>' + JSON.stringify(result.data); // Update this line with your chart code
-      });
-    })
+    data.forEach((item) => {
+      const circleMarker = L.circleMarker([item.latitude, item.longitude], { color: 'red', radius: 20 })
+        .on('click', () => {
+          setChartData(fakeChartData); // 更新图表数据
+        })
+        .addTo(mymap);
+    });
 
     L.control.sidepanel('mySidepanelLeft', {
       menuposition: "topright",
@@ -73,7 +83,7 @@ const Basic = () => {
             <div className="sidepanel-content">
               <div className="sidepanel-tab-content" data-tab-content="tab-5">
                 <h4>Content 5</h4>
-                {chartData && // If showChart is true and chartData is not null, then display the chart
+                {showChart && chartData && // If showChart is true and chartData is not null, then display the chart
                   <div>
                     <LineChart width={300} height={200} data={chartData}>
                       <CartesianGrid strokeDasharray="3 3" />
