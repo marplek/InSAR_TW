@@ -6,3 +6,4 @@ pg.js
 .env
 package-lock.json
 node_modules/
+client/package-lock.json
