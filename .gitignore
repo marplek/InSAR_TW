@@ -4,3 +4,5 @@ server/node_modules
 server/package-lock.json
 pg.js
 .env
+package-lock.json
+node_modules/
