@@ -2,7 +2,7 @@
 FROM postgres:12
 
 # Install PostGIS
-RUN apt-get update \
+RUN apt-get update --allow-unauthenticated\
     && apt-get install -y --no-install-recommends \
         postgis \
         postgresql-12-postgis-3 \

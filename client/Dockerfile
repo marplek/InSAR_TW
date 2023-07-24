@@ -1,9 +1,9 @@
-# Dockerfile
 # Stage 1 - the build process
 FROM node:14 as build-deps
 WORKDIR /usr/src/app
 COPY package*.json ./
-RUN npm install
+RUN npm install --only=production
+RUN npm cache clean --force
 COPY . ./
 RUN npm run build
 

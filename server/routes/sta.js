@@ -16,7 +16,7 @@ const client = new Client({
 
 
 
-  const token = "gWHLgmSqna5KdxCOFAj_GBNtSaRGz9R3QjqOsvvk2x1HRYSG7RLrD_EXamZSPaW_VzOtXmdokaX159Y8Yv6spA==";
+  const token = "gWlTj6StNBP9OGIeLCMYjt9PJ9W8wvPGutDgl-tVuS6r9uYX9KLXEWhD2PTAppJdRaOdThu69gwJhdWKYPyWoQ==";
   const org = "insartw";
   const bucket = "test5";
   const influxdb = new InfluxDB({url: 'http://influxdb:8086', token: token});

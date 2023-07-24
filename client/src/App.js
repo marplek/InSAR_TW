@@ -8,12 +8,16 @@ import axios from 'axios';
 
 
 const Basic = () => {
-  const position = [25.03418, 121.564517]
+  const position = [24.03418, 121.564517]
   const mapRef = useRef(null);
   const [data, setData] = useState([]);
-
-
+  const [mymap, setMap] = useState(null);  // Initialize a state to store the map object
   const [chartData, setChartData] = useState(null);
+  const [sidePanelContent, setSidePanelContent] = useState("Content 5");
+  const [lastClickedId, setLastClickedId] = useState(null);
+  const [mysidePanel, setMysidePanel] = useState(null);  // Initialize a state to store the map object
+  const markersRef = useRef(new Map());  // 用於存儲 markers 的 Map
+  const lastClickedIdRef = useRef(null);  // 創建一個新的 useRef 來存儲最新的 lastClickedId
 
 
 
@@ -30,25 +34,67 @@ const Basic = () => {
 
     const mymap = L.map(mapRef.current, {
       zoomControl: false
-    }).setView(position, 17);
+    }).setView(position, 10);
     const OSMUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     L.tileLayer(OSMUrl).addTo(mymap);
     L.control.zoom({position: 'bottomright'}).addTo(mymap);
-    data.forEach(item => {
-      const marker = L.circleMarker([item.latitude, item.longitude], {color: 'red', radius: 20}).addTo(mymap);
-      marker.on('click', async () => {
-        const result = await axios(`/api/data/${item.id}`);
-        setChartData(result.data);
-        document.querySelector('.sidepanel-tab-content').innerHTML = '<h4>Chart Data</h4>' + JSON.stringify(result.data); // Update this line with your chart code
-      });
-    })
+    setMap(mymap);  // Save the map object in state
 
-    L.control.sidepanel('mySidepanelLeft', {
+    const mysidePanel = L.control.sidepanel('mySidepanelLeft', {
       menuposition: "topright",
       tabsPosition: 'left',
       startTab: 'tab-5'
     }).addTo(mymap);
-  }, [data]);
+    setMysidePanel(mysidePanel);  // Correctly save the SidePanel object in state
+
+  }, []);
+
+  useEffect(() => {
+    lastClickedIdRef.current = lastClickedId;  // 更新 useRef 中的 lastClickedId
+  }, [lastClickedId]);
+  
+  useEffect(() => {
+    // Run this useEffect whenever data changes
+    if (data && mymap) {
+        data.forEach(item => {
+          if (!markersRef.current.has(item.id)) {
+            const marker = L.circleMarker([item.latitude, item.longitude], {color: 'red', radius: 20}).addTo(mymap);
+              marker.on('click', async () => {
+                const result = await axios(`/api/data/${item.id}`);
+                setChartData(result.data);
+              
+                // Update the side panel content using React's state
+                setSidePanelContent(
+                  <>
+                    <h4>Chart Data</h4>
+
+                  </>
+                );
+                let sidePanelElement = document.getElementById('mySidepanelLeft');
+        
+                // If the clicked item is the same as the last clicked item, close the side panel
+
+                if (item.id === lastClickedIdRef.current) {
+                  if(sidePanelElement.classList.contains('opened')){
+                    sidePanelElement.classList.remove('opened');
+                  }
+                  sidePanelElement.classList.add('closed');
+                  setLastClickedId(null);  // Reset the last clicked id
+                } 
+                // If the clicked item is not the same as the last clicked item, open the side panel
+                else {
+                  if(sidePanelElement.classList.contains('closed')){
+                    sidePanelElement.classList.remove('closed');
+                  }
+                  sidePanelElement.classList.add('opened');
+                  setLastClickedId(item.id);  // Update the last clicked id
+                }
+              });
+          markersRef.current.set(item.id, marker); // 在 Map 中儲存這個 marker
+        }
+      })
+    }
+  }, [data, mymap, lastClickedId]); // Include sidePanel in the dependencies to get the latest reference
 
   return (
     <div ref={mapRef} className="sidebar-map" style={{ height: "100vh", width: "100%" }}>
@@ -72,8 +118,8 @@ const Basic = () => {
           <div className="sidepanel-content-wrapper">
             <div className="sidepanel-content">
               <div className="sidepanel-tab-content" data-tab-content="tab-5">
-                <h4>Content 5</h4>
-                {chartData && // If showChart is true and chartData is not null, then display the chart
+                {sidePanelContent}
+                {chartData &&
                   <div>
                     <LineChart width={300} height={200} data={chartData}>
                       <CartesianGrid strokeDasharray="3 3" />
@@ -85,7 +131,6 @@ const Basic = () => {
                     </LineChart>
                   </div>
                 }
-                <a href="/">Back</a>
               </div>
             </div>
           </div>
