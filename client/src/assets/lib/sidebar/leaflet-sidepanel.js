@@ -166,6 +166,39 @@ L.Control.SidePanel = L.Control.extend({
 		}.bind(this), container);
 	},
 
+	togglePanel: function() {
+		let IS_OPENED = true;
+		let opened = L.DomUtil.hasClass(this._panel, 'opened');
+		let closed = L.DomUtil.hasClass(this._panel, 'closed');
+	
+		if (!opened && !closed) {
+			L.DomUtil.addClass(this._panel, 'opened');
+		} else if (!opened && closed) {
+			L.DomUtil.addClass(this._panel, 'opened');
+			L.DomUtil.removeClass(this._panel, 'closed');
+		} else if (opened && !closed) {
+			IS_OPENED = false;
+			L.DomUtil.removeClass(this._panel, 'opened');
+			L.DomUtil.addClass(this._panel, 'closed');
+		} else {
+			L.DomUtil.addClass(this._panel, 'opened');
+		}
+	
+		if (this.options.pushControls) {
+			let controlsContainer = this._map.getContainer().querySelector('.leaflet-control-container');
+	
+			L.DomUtil.addClass(controlsContainer, 'leaflet-anim-control-container');
+	
+			if (IS_OPENED) {
+				L.DomUtil.removeClass(controlsContainer, this.options.panelPosition + '-closed');
+				L.DomUtil.addClass(controlsContainer, this.options.panelPosition + '-opened');
+			} else {
+				L.DomUtil.removeClass(controlsContainer, this.options.panelPosition + '-opened');
+				L.DomUtil.addClass(controlsContainer, this.options.panelPosition + '-closed');
+			}
+		}
+	},
+
 	_headerButton: function(map) {
 		const container = this._panel.querySelector('.sidepanel-inner-wrapper');
 		const button = container.querySelector('.back-link');
