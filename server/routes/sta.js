@@ -16,12 +16,8 @@ const client = new Client({
 
 
 
-  const token = "gWlTj6StNBP9OGIeLCMYjt9PJ9W8wvPGutDgl-tVuS6r9uYX9KLXEWhD2PTAppJdRaOdThu69gwJhdWKYPyWoQ==";
-  const org = "insartw";
-  const bucket = "test5";
   const influxdb = new InfluxDB({url: 'http://influxdb:8086', token: token});
 
-  client.connect() // 连接在此处完成
   .catch(err => console.error('Error establishing connection to PostgreSQL:', err));
   
   router.get('/sta', async (req, res) => {
