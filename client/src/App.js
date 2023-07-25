@@ -124,6 +124,31 @@ const Basic = () => {
                   sidePanelElement.classList.add('opened');
                   setLastClickedId(item.id);  // Update the last clicked id
                 }
+
+                // 一個幫助函數，用於刪除所有元素的 'active' 類別
+                function removeActiveClassFromElements(elements) {
+                  elements.forEach(element => element.classList.remove('active'));
+                }
+                
+                // 一個幫助函數，用於為特定元素添加 'active' 類別
+                function addActiveClassToElement(selector) {
+                  let element = document.querySelector(selector);
+                  if (element) {
+                    element.classList.add('active');
+                  }
+                }
+                
+                function removeActiveClassToElement(selector) {
+                  let element = document.querySelector(selector);
+                  if (element) {
+                    element.classList.remove('active');
+                  }
+                }
+                // 刪除所有 tabs 的 'active' 類別
+                const tab5Element = document.querySelector('.sidebar-tab-link[data-tab-link="tab-5"]');
+                if(tab5Element) {
+                  tab5Element.click();  // Programmatically click on the tab-5 link
+                }
               });
           markersRef.current.set(item.id, marker); // 在 Map 中儲存這個 marker
         }
