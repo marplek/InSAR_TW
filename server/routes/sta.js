@@ -14,10 +14,12 @@ const client = new Client({
     port: process.env.DB_PORT,
   });
 
-
-
+  const token = process.env.INFLUXDB_TOKEN;
+  const org = process.env.INFLUXDB_ORG;
+  const bucket = process.env.INFLUXDB_BUCKET;
   const influxdb = new InfluxDB({url: 'http://influxdb:8086', token: token});
 
+  client.connect() 
   .catch(err => console.error('Error establishing connection to PostgreSQL:', err));
   
   router.get('/sta', async (req, res) => {
