@@ -7,12 +7,18 @@ function LoginForm({ onLogin }) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     // Example login logic
     try {
-      const response = await axios.post('/login', { username, password });
+      const response = await axios.post('/api/login', { username, password });
       
       if (response.status === 200) {
+        // Extract JWT from the server's response
+        const token = response.data.token; // Replace 'token' with the actual key in your server's response
+  
+        // Store the token in the localStorage
+        localStorage.setItem('token', token);
+  
         // Call the onLogin callback
         onLogin();
       }

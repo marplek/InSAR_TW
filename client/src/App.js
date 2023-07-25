@@ -36,18 +36,28 @@ const Basic = () => {
   const handleLogin = () => {
     setIsLoggedIn(true);
   };
-  
+
+  // Set up axios interceptor inside useEffect hook
+  useEffect(() => {
+    axios.interceptors.request.use(function (config) {
+      const token = localStorage.getItem('token');
+      config.headers.Authorization = token ? `Bearer ${token}` : '';
+      return config;
+    });
+  }, []);
+
   if (process.env.REACT_APP_ENV === 'development') {
     setData(fakeData);
   } else {
-      // 如果是生產環境，從伺服器獲取資料
-      useEffect(() => {
-          const fetchData = async () => {
-              const result = await axios('/api/sta');
-              setData(result.data);
-          };
-          fetchData();
-      }, []);
+    useEffect(() => {
+      if (isLoggedIn) {
+        const fetchData = async () => {
+          const result = await axios('/api/sta');
+          setData(result.data);
+        };
+        fetchData();
+      }
+      }, [isLoggedIn]);
   }
 
 
