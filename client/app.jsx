@@ -7,6 +7,7 @@ import {ScatterplotLayer} from '@deck.gl/layers';
 import {readableInteger} from './components/utils/format-utils';
 
 import ExampleInfoPanel from './components/info-panel/index';  // Update path to actual import
+import CustomizedInputBase  from './components/info-panel/search';
 
 const MALE_COLOR = [0, 128, 255];
 const FEMALE_COLOR = [255, 0, 128];
@@ -50,8 +51,11 @@ export default function App({
   mapStyle = 'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json'
 }) {
   const [selectedPoint, setSelectedPoint] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
-
+  function handleSearchTermChange(event) {
+    setSearchTerm(event.target.value);
+}
   const layers = [
     new ScatterplotLayer({
       id: 'scatter-plot',
@@ -115,6 +119,7 @@ export default function App({
 
   return (
     <>
+    <CustomizedInputBase  value={searchTerm} onChange={handleSearchTermChange} />
       <DeckGL layers={layers} initialViewState={INITIAL_VIEW_STATE} controller={true}>
         <Map reuseMaps mapLib={maplibregl} mapStyle={mapStyle} preventStyleDiffing={true} />
       </DeckGL>
