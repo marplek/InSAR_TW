@@ -23,7 +23,6 @@ services:
     restart: always
     depends_on:
       - postgres
-      - influxdb
       - redis
 
   postgres:

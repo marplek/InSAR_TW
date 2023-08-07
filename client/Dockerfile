@@ -3,9 +3,10 @@ FROM node:14 as build-deps
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install --only=production
+RUN npm install -g vite
 RUN npm cache clean --force
 COPY . ./
-RUN npm run build
+RUN vite build
 
 # Stage 2 - the production environment
 FROM nginx:1.19.0-alpine
