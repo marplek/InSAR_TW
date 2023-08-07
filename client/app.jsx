@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {createRoot} from 'react-dom/client';
 import {Map} from 'react-map-gl';
 import maplibregl from 'maplibre-gl';
@@ -8,13 +8,6 @@ import {readableInteger} from './components/utils/format-utils';
 
 import ExampleInfoPanel from './components/info-panel/index';  // Update path to actual import
 import CustomizedInputBase  from './components/info-panel/search';
-
-const MALE_COLOR = [0, 128, 255];
-const FEMALE_COLOR = [255, 0, 128];
-
-// Source data CSV
-const DATA_URL =
-  'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/scatterplot/manhattan.json'; // eslint-disable-line
 
 const INITIAL_VIEW_STATE = {
   longitude: 121,
@@ -45,14 +38,35 @@ function generateRandomPoints(count) {
   return points;
 }
 
+
+
 export default function App({
-  data = generateRandomPoints(800000),
+  //data = generateRandomPoints(800000),
   radius = 30,
   mapStyle = 'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json'
 }) {
+  const [data, setData] = useState([]);
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  useEffect(() => {
+    // 從 /api/data 端點獲取資料
+    fetch('/api/data')
+      .then(response => response.json())
+      .then(data => {
+        // 隨機選擇 10 萬點
+        const totalPoints = data.length;
+        const indices = new Set();
+        while (indices.size < 100000 && indices.size < totalPoints) {
+          indices.add(Math.floor(Math.random() * totalPoints));
+        }
+        const selectedPoints = Array.from(indices).map(index => data[index]);
+
+        setData(selectedPoints);
+      })
+      .catch(error => console.error("Error loading data:", error));
+  }, []);
+  
   function handleSearchTermChange(event) {
     setSearchTerm(event.target.value);
 }

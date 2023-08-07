@@ -1,5 +1,6 @@
 /* eslint import/namespace: ['error', { allowComputed: true }] */
 import React, {useState} from 'react';
+
 import styled from 'styled-components';
 import {PanelContainer, PanelContent, PanelTitle, PanelExpander, SourceLink} from './styled';
 
@@ -78,12 +79,12 @@ function InfoPanel({title, children, sourceLink}) {
   );
 }
 
+
 export default function ExampleInfoPanel({title, sourceLink, params, meta, children, updateParam}) {
   return (
     <InfoPanel title={title} sourceLink={sourceLink}>
       <InfoPanelContent>
         {children}
-
         {Object.keys(params).length > 0 && <hr />}
 
         {Object.keys(params)

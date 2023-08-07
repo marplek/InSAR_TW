@@ -1,12 +1,11 @@
 const express = require('express');
-const { Client } = require('pg');
-const {InfluxDB} = require('@influxdata/influxdb-client');
+const { Pool } = require('pg');
 const app = express();
 const router = express.Router();
 require('dotenv').config();
 
 // 创建一个 PostgreSQL 数据库连接池
-const client = new Client({
+const pool = new Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
     database: process.env.DB_DATABASE,
@@ -15,38 +14,25 @@ const client = new Client({
   });
 
 
-
-  const token = process.env.INFLUXDB_TOKEN;
-  const org = process.env.INFLUXDB_ORG;
-  const bucket = process.env.INFLUXDB_BUCKET;
-  const influxdb = new InfluxDB({url: 'http://influxdb:8086', token: token});
-
-  client.connect() 
+  pool.connect()
+  .then(() => console.log('Successfully connected to PostgreSQL!'))
   .catch(err => console.error('Error establishing connection to PostgreSQL:', err));
-  
-  router.get('/sta', async (req, res) => {
+  router.get('/data', async (req, res) => {
     try {
-      const query = 'SELECT id, ST_X(geom) AS longitude, ST_Y(geom) AS latitude FROM random_points;';
-      const result = await client.query(query);
-  
-      res.status(200).send(result.rows);
+        const query = `
+        SELECT ST_X(coordinate) as longitude, ST_Y(coordinate) as latitude
+        FROM station
+        ORDER BY RANDOM()
+        LIMIT 100000
+        `;
+        const result = await pool.query(query);
+        const data = result.rows.map(row => [row.longitude, row.latitude]);
+        res.json(data);
     } catch (err) {
-      console.error('Error retrieving random points:', err);
-      res.status(500).send({ error: 'An error occurred while retrieving data' });
+        console.error(err);
+        res.status(500).send('Server error');
     }
-  });
+});
 
-  router.get('/data/:id', async (req, res) => {
-    const { id } = req.params;
-    console.log(id)
-  
-    const queryApi = influxdb.getQueryApi(org);
-  
-    const fluxQuery = `from(bucket: "${bucket}") |> range(start: -1y) |> filter(fn: (r) => r["id"] == "${id}")`;
-  
-    const result = await queryApi.collectRows(fluxQuery);
-    
-    res.send(result);
-  });
   
 module.exports = router;
