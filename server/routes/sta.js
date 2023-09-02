@@ -23,7 +23,7 @@ const pool = new Pool({
         SELECT ST_X(coordinate) as longitude, ST_Y(coordinate) as latitude
         FROM station
         ORDER BY RANDOM()
-        LIMIT 100000
+        LIMIT 1000000
         `;
         const result = await pool.query(query);
         const data = result.rows.map(row => [row.longitude, row.latitude]);

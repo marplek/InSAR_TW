@@ -42,7 +42,20 @@ services:
     image: redis:latest
     volumes:
       - redis_data:/data
+
+  geoserver:
+    image: docker.osgeo.org/geoserver:2.23.1
+    environment:
+      - GEOSERVER_ADMIN_USER=${GEOSERVER_ADMIN_USER}
+      - GEOSERVER_ADMIN_PASSWORD=${GEOSERVER_ADMIN_PASSWORD}
+      - INSTALL_EXTENSIONS=true
+      - STABLE_EXTENSIONS=vectortiles
+    ports:
+      - '8080:8080'
+    volumes:
+      - geoserver_data:/opt/geoserver_data
+    restart: always
 volumes:
   postgres_data:
   redis_data:
-
+  geoserver_data:
