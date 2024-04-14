@@ -1,28 +1,23 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <title>InSAR TW</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css' rel='stylesheet' />
-  <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TW_InSAR</title>
+  <script type="module" src="/src/index.ts"></script>
 </head>
 
 <body>
-  <div id="app"></div>
+  <div id="toolbarIcon">☰</div>
+  <div id="toolbar" style="display: none;">
+    <label>
+      <input type="checkbox" id="toggleFaultLines" />
+      Show Fault Lines
+    </label>
+  </div>
+  <div id="cesiumContainer"></div>
 </body>
-<script type="module">
-  import { renderToDOM } from './app.jsx';
-  renderToDOM(document.getElementById('app'));
-</script>
 
 </html>

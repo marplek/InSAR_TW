@@ -1,12 +1,14 @@
 # Stage 1 - the build process
-FROM node:14 as build-deps
+# Use a Node.js base image
+FROM node:21-alpine3.18 as build-deps
+
+# Set the working directory in the container
 WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install --only=production
-RUN npm install -g vite
-RUN npm cache clean --force
-COPY . ./
-RUN vite build
+
+# Copy your project files into the Docker image
+COPY . .
+RUN npm i && npm run build
+
 
 # Stage 2 - the production environment
 FROM nginx:1.19.0-alpine
